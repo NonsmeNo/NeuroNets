@@ -1,174 +1,116 @@
 from random import *
+class Point:
+    classification = 0
 
-class Site:
-    x = []
-    clas = 0
+    def __init__(self, a, b):
+        self.x = [uniform(a, b) for _ in range(2)]
 
-    def __init__(self, a, b, fl):
-        self.x = [uniform(a, b) for i in range(2)]
-
-        if fl:
-            self.clas = 1 if self.x[0] > self.x[1] else (-1)
+        if self.x[0] > self.x[1]:
+            self.classification = 1
         else:
-            pass
-
-
-class Neuron_Adaline:
-    w = []
-
+            self.classification = -1
+class Perceptron:
     def __init__(self):
-        """Create random weights"""
-        self.w = [uniform(-1, 1) for i in range(2)]
-
-    def summing(self, x):
-        summ = 1  # порог
-
-        for i in range(len(self.w)):
-            summ += self.w[i] * x[i]
-
-        return summ
-
-
-    def change_weights(self, n, y, u, x):
-        """Изменяем веса дискретным способом, по формуле"""
-        # тут уже не градиентный спуск
-        for i in range(len(self.w)):
-            self.w[i] -= n * (u - y) * x[i]
-
-class Neuron:
-    w = []
-
-    def __init__(self):
-        """Create random weights"""
-        self.w = [uniform(-1, 1) for i in range(2)]
-
-    def summing(self, x):
-        summ = 1   # порог
-
-        for i in range(len(self.w)):
-            summ += self.w[i] * x[i]
-
-        return summ
-
-
-    def change_weights(self, n, answer, gradient):
-        """Меняем веса по правилу градиентного спуска"""
-        if answer == 0:
-            self.w[0] -= n * (answer + gradient) * (1 + gradient)
+        self.w = [uniform(-1, 1) for _ in range(2)]
+        self.learning_rate = 0.3
+    def calculate(self, inputs): #взвешенная сумма
+        b = 1  # порог
+        return self.w[0] * inputs[0] + self.w[1] * inputs[1] + b
+    def weight_correction(self, expected, output): #коррекция весов
+        gradient = output - expected
+        if expected == 0:
+            self.w[0] -= self.learning_rate * (expected + gradient) * (1 + gradient)
         else:
-            self.w[1] -= n * (answer + gradient) * (1 + gradient)
+            self.w[1] -= self.learning_rate * (expected + gradient) * (1 + gradient)
 
+class Adaline:
+    def __init__(self):
+        self.w = [uniform(-1, 1) for _ in range(2)]
+        self.learning_rate = 0.3
+
+    def calculate(self, inputs): #взвешенная сумма
+        b = 1  # порог
+        return self.w[0] * inputs[0] + self.w[1] * inputs[1] + b
+
+    def weight_correction(self, y, u, x): #коррекция весов дискретным способом
+        for i in range(len(self.w)):
+            self.w[i] -= self.learning_rate * (u - y) * x[i]
 class Network:
-    def relu(self, summ):
+    def reLU(self, summ):
         return max(0, summ)
 
-    def signum(self, x):
-        """Функция активации сигнум"""
-        if x > 0:
-            return 1
-        else:
-            return -1
 
-    def mse(self, answer, real_output):
-        """Функция среднеквадратичной ошибки, которую будем минимизировать"""
-        error = (answer - real_output) * (answer - real_output)
-        return error
-
-
-sites_train = [Site(0, 0.5, True) for i in range(20)]
-sites_train_cords = [[sites_train[i].x[0], sites_train[i].x[1]] for i in range(len(sites_train))]
-sites_train_answer = [sites_train[i].clas for i in range(len(sites_train))]
-n = 0.3
-
+#генерация обучающих примеров
+points_init = [Point(0, 0.5) for i in range(20)]
+points_coords = [[points_init[i].x[0], points_init[i].x[1]] for i in range(len(points_init))]
+print(points_coords)
+points_result_class = [points_init[i].classification for i in range(len(points_init))]
+print(points_result_class)
 print()
-print("<<<<<<<<<<<<<<<<< Task A >>>>>>>>>>>>>>>>>>>")
-neuron = Neuron()
+
+#задание 1
+print("Пункт A")
+neuron = Perceptron()
 network = Network()
 
 # обучаем нейросеть, изменяем веса
-print()
-print("Обучение нейросети")
-
-for i in range(1000):
-    real_outputs = []
+epochs = 1000
+for i in range(epochs):
     errors = []
+    for j in range(len(points_init)): #считаем взвеш сумму для каждого примера и корректируем веса
+        output = network.reLU(neuron.calculate(points_coords[j]))
+        neuron.weight_correction(points_result_class[j], output)
 
-    for j in range(len(sites_train)):
-        real_output = network.relu(neuron.summing(sites_train_cords[j]))
-        real_outputs.append(real_output)
-        error = network.mse(sites_train_answer[j], real_output)
-        errors.append(error)
+points_random = [Point((-0.5), 0.5) for i in range(1000)]
+points_random_coords = [[points_random[i].x[0], points_random[i].x[1]] for i in range(len(points_random))]
+points_random_result = [points_random[i].classification for i in range(len(points_random))]
 
-    gradient = []
-    for k in range(len(sites_train_answer)):
-        gradient.append(real_outputs[k] - sites_train_answer[k])
-        # меняем веса
-        neuron.change_weights(n, sites_train_answer[k], gradient[k])
+print("Классификация точек после обучения:")
+correctly = 0
+for i in range(len(points_random)):
+    output = network.reLU(neuron.calculate(points_random_coords[i]))
 
-    if (i+1) % 100 == 0:
-        print("Эпоха обучения: " + str(i + 1) + " | Ошибки: " + str(errors))
+    classification = (-1) if output < 0.5 else 1
 
-print()
-sites_random = [Site((-0.5), 0.5, True) for i in range(1000)]
-sites_random_cords = [[sites_random[i].x[0], sites_random[i].x[1]] for i in range(len(sites_random))]
-sites_random_answer = [sites_random[i].clas for i in range(len(sites_random))]
-
-print("Классификация точек после обучения")
-
-rights = 0
-
-for i in range(len(sites_random)):
-    output = network.relu(neuron.summing(sites_random_cords[i]))
-
-    clas = (-1) if output < 0.5 else 1
-
-    if i % 200 == 0:
+    if i % 100 == 0:
         print()
-        print("Точка " + str(sites_random_cords[i]) + ", класс: " + str(sites_random_answer[i]))
-        print("Ответ нейросети: " + str(clas))
+        print("Точка " + str(i) + ": " +str(points_random_coords[i]) + ", ответ нейросети: класс " + str(classification))
 
-    if sites_random[i].clas == clas:
-        rights += 1
-
-print("Точность обычного нейрона: " + str(rights) + "/1000")
+    if points_random[i].classification == classification:
+        correctly += 1
+print()
+print("Точность персептрона: " + str(correctly) + "/1000")
 
 print()
-print()
-print("<<<<<<<<<<<<<<<<< Task B >>>>>>>>>>>>>>>>>>>")
-neuron = Neuron_Adaline()
+print("Пункт В")
+neuron = Adaline()
 network = Network()
 
-# обучаем наш нейрон и считаем ошибки
-for i in range(1000):
-    real_outputs = []
+# обучаем нейросеть, изменяем веса
+for i in range(epochs):
     errors = []
+    for j in range(len(points_init)): #считаем взвеш сумму для каждого примера и корректируем веса
+        output = network.reLU(neuron.calculate(points_coords[j]))
+        neuron.weight_correction(points_result_class[j], output, points_coords[j])
 
-    for j in range(len(sites_train)):
-        real_output = network.signum(neuron.summing(sites_train_cords[j]))
-        real_outputs.append(real_output)
-        error = network.mse(sites_train_answer[j], real_output)
-        errors.append(error)
-        neuron.change_weights(n, sites_train_answer[j], real_output, sites_train_cords[j])
+points_random = [Point((-0.5), 0.5) for i in range(1000)]
+points_random_coords = [[points_random[i].x[0], points_random[i].x[1]] for i in range(len(points_random))]
+points_random_result = [points_random[i].classification for i in range(len(points_random))]
 
+print("Классификация точек после обучения:")
 
-    if (i + 1) % 100 == 0:
-        print("Эпоха обучения: " + str(i+1) + " | Ошибки: " + str(errors))
+correctly = 0
+for i in range(len(points_random)):
+    output = network.reLU(neuron.calculate(points_random_coords[i]))
 
-print("Классификация точек после обучения")
+    classification = (-1) if output < 0.5 else 1
 
-rights = 0
-
-for i in range(len(sites_random)):
-    output = network.signum(neuron.summing(sites_random_cords[i]))
-
-    clas = (-1) if output < 0.5 else 1
-
-    if i % 200 == 0:
+    if i % 100 == 0:
         print()
-        print("Точка " + str(sites_random_cords[i]) + ", класс: " + str(sites_random_answer[i]))
-        print("Ответ нейросети: " + str(clas))
+        print("Точка " + str(i) + ": " +str(points_random_coords[i]) + ", ответ нейросети: класс " + str(classification))
 
-    if sites_random[i].clas == clas:
-        rights += 1
+    if points_random[i].classification == classification:
+        correctly += 1
+print()
+print("Точность персептрона: " + str(correctly) + "/1000")
 
-print("Точность нейрона Адалайна: " + str(rights) + "/1000")
