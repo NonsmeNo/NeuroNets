@@ -6,14 +6,10 @@ class Neuron:
     def __init__(self):
         """Create random weights"""
         self.w = [uniform(-1, 1) for i in range(2)]
+        print(self.w)
 
     def summing(self, x):
-        summ = 1   # порог
-
-        for i in range(len(self.w)):
-            summ += self.w[i] * x[i]
-
-        return summ
+        return self.w[0] * x[0] + self.w[1] * x[1] + 1
 
     def change_weights(self, n, answer, gradient):
         """Меняем веса по правилу градиентного спуска"""
@@ -70,7 +66,7 @@ for i in range(1000):
         # меняем веса
         neuron.change_weights(n, answers[k], gradient[k])
 
-    print("Эпоха обучения: " + str(i + 1) + " | Ошибки: " + str(errors))
+   # print("Эпоха обучения: " + str(i + 1) + " | Ошибки: " + str(errors))
 
 
 # результаты нейросети после обучения
