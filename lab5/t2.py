@@ -1,7 +1,7 @@
 # Рекуррентная сеть Хопфилда
 # 1 слой нейронов; функция активации sign; кол-во нейронов равно размерности входных векторов (100);
-
 import numpy as np
+
 
 
 class HopfieldNetwork:
@@ -26,6 +26,7 @@ class HopfieldNetwork:
             self.weights += pattern
             # устанавливаем 0 по диагонали, чтобы нейроны как-то там сами себя не активировали
             np.fill_diagonal(self.weights, 0)
+        print(patterns)
 
     def recall(self, pattern: list, max_iter=100) -> list:
         """

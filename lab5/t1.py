@@ -8,6 +8,7 @@ class HopfieldNetwork:
     def train(self, patterns):
         self.weights = sum([np.outer(i,i.T) for i in patterns])/self.n
         np.fill_diagonal(self.weights, 0)
+        print(self.weights)
 
     def predict(self, state):
         new_state = np.sign(np.dot(self.weights, state))
@@ -29,7 +30,7 @@ test1 = np.array([
     [-1,1,-1,-1,1,-1,-1,-1,-1,-1],
     [-1,1,-1,-1,1,-1,-1,-1,-1,-1],
     [-1,1,1,-1,1,1,-1,-1,-1,-1]
-]).reshape((100,))
+]).reshape(100)
 test2 = np.array([
     [1,1,-1,-1,-1,-1,-1,1,1,1],
     [1,1,-1,-1,-1,-1,1,1,1,1],
@@ -43,7 +44,7 @@ test2 = np.array([
     [1,1,1,-1,-1,-1,-1,-1,1,1]
 ]).reshape((100,))
 patterns = [test1, test2]
-
+print(test1)
 network.train(patterns)
 
 def add_noise(array, noise_level=0.1):

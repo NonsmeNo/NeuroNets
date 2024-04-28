@@ -52,7 +52,7 @@ print(w)
 outputs = [sum([neurons[i].calculate(val[0]) * w[i][0] for i in range(5)]) for val in inputs]
 
 outputs = np.array(outputs)
-print(outputs)
+print("Выходные значения " + str(outputs))
 
 # считаем среднюю относительную ошибку аппроксимации
 n = len(y)
