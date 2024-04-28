@@ -17,9 +17,12 @@ class Neuron:
     def weight_correction(self, expected, output, inputs):
         for i in range(len(self.w)):
             self.w[i] -= self.learning_rate * (output - expected) * inputs[i]
+class Network:
+    def reLU(self, x):
+        return max(0, x)
+
 
 def testing(x):
-    print (x)
     for i in range(len(x)):
         outputs = []
 
@@ -29,10 +32,9 @@ def testing(x):
             outputs.append(answer)
 
         print(f"Для {i + 1}-ой буквы ответ: {outputs}")
-class Network:
-    def reLU(self, x):
-        return max(0, x)
 
+
+arrr = [0, 0, 0, 0]
 
 neurons = [Neuron() for i in range(4)]
 network = Network()
@@ -64,6 +66,13 @@ testing(inputs)
 # проверка после обучения на буквах с шумами
 print()
 print("Проверка на буквах с шумами:")
+
+# проверка после обучения на буквах с шумами
+print()
+print("Проверка на буквах с шумами:")
 x_loud = [[1, 1, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 1, 0, 1, 0],
          [0, 1, 0, 0, 1, 1, 0, 1, 0], [1, 0, 0, 1, 0, 0, 1, 1, 0]]
 testing(x_loud)
+
+
+

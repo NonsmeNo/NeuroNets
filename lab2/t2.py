@@ -43,9 +43,7 @@ class Network:
 #генерация обучающих примеров
 points_init = [Point(0, 0.5) for i in range(20)]
 points_coords = [[points_init[i].x[0], points_init[i].x[1]] for i in range(len(points_init))]
-print(points_coords)
 points_result_class = [points_init[i].classification for i in range(len(points_init))]
-print(points_result_class)
 print()
 
 #задание 1

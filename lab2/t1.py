@@ -1,5 +1,6 @@
 from random import *
 
+
 class Neuron:
     def __init__(self):
         self.w = [uniform(-1, 1) for _ in range(2)]
@@ -41,6 +42,8 @@ for i in range(epochs):
     for j in range(len(inputs)): #считаем взвеш сумму для каждого примера и корректируем веса
         output = network.reLU(neuron.calculate(inputs[j]))
         neuron.weight_correction(expected_answ[j], output)
+
+        print(f"Эпоха {i + 1}:", [network.reLU(neuron.calculate(input_point)) for input_point in inputs])
 
 print("\nРезультаты работы после обучения:")
 for i in range(len(inputs)):
