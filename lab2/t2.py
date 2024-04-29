@@ -12,7 +12,7 @@ class Point:
 class Perceptron:
     def __init__(self):
         self.w = [uniform(-1, 1) for _ in range(2)]
-        self.learning_rate = 0.3
+        self.learning_rate = 0.5
     def calculate(self, inputs): #взвешенная сумма
         b = 1  # порог
         return self.w[0] * inputs[0] + self.w[1] * inputs[1] + b
@@ -26,7 +26,7 @@ class Perceptron:
 class Adaline:
     def __init__(self):
         self.w = [uniform(-1, 1) for _ in range(2)]
-        self.learning_rate = 0.3
+        self.learning_rate = 0.5
 
     def calculate(self, inputs): #взвешенная сумма
         b = 1  # порог

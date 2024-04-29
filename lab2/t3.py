@@ -1,26 +1,34 @@
 import random
 import math
 
-from random import *
-
 class Neuron:
-    def __init__(self):
-        self.w = [uniform(-1, 1) for _ in range(9)]
-        self.learning_rate = 0.5
+    w = []
 
-    def calculate(self, inputs): #взвешенная сумма
-        b = 1  # порог
+    def __init__(self):
+        self.w = [random.uniform(-1, 1) for i in range(9)]
+
+    def calculate(self, inputs):
+        b = 1
         for i in range(9):
             b += inputs[i] * self.w[i]
         return b
 
-    def weight_correction(self, expected, output, inputs):
+    def weight_correction(self, n, y, u, x_in):
         for i in range(len(self.w)):
-            self.w[i] -= self.learning_rate * (output - expected) * inputs[i]
-class Network:
-    def reLU(self, x):
-        return max(0, x)
+            self.w[i] -= n * (u - y) * x_in[i]
 
+class Network:
+
+    def reLU(self, x):
+        return x
+
+    def err(self, answer, output):
+        summ = 0
+
+        for i in range(len(answer)):
+            summ += answer[i] - output[i]
+
+        return summ / len(answer)
 
 def testing(x):
     for i in range(len(x)):
@@ -34,28 +42,39 @@ def testing(x):
         print(f"Для {i + 1}-ой буквы ответ: {outputs}")
 
 
-arrr = [0, 0, 0, 0]
-
-neurons = [Neuron() for i in range(4)]
 network = Network()
+neurons = [Neuron() for i in range(4)]
 
+n = 0.3
 inputs = [[1, 0, 1, 0, 1, 0, 1, 0, 1],
           [1, 0, 1, 0, 1, 0, 0, 1, 0],
           [0, 1, 0, 0, 1, 0, 0, 1, 0],
           [1, 0, 0, 1, 0, 0, 1, 1, 1]]
 
-expected_answ = [[0, 0, 0, 1],
-                 [0, 0, 1, 0],
-                 [0, 1, 0, 0],
-                 [1, 0, 0, 0]]
-# обучение
-epochs = 5000
-for i in range(epochs):
+answers = [[0, 0, 0, 1],
+           [0, 0, 1, 0],
+           [0, 1, 0, 0],
+           [1, 0, 0, 0]]
+
+# обучение нейросети
+for i in range(1000): # эпохи
+    errors = []
     for j in range(len(inputs)): # обучающие примеры
+        outputs = []
+
         for k in range(len(neurons)): # нейроны
             output = network.reLU(neurons[k].calculate(inputs[j]))
-            neurons[k].weight_correction(expected_answ[j][k], output, inputs[j])
+            outputs.append(output)
 
+        error = network.err(answers[j], outputs)
+        errors.append(error)
+
+        # меняем веса у нейронов
+        for k in range(len(neurons)):
+            neurons[k].weight_correction(n, answers[j][k], outputs[k], inputs[j])
+
+    if (i+1) % 100 == 0:
+        print(f"Эпоха обучения: {i+1}/1000, ошибка: {errors}")
 
 
 # проверка после обучения на обычных буквах
@@ -66,13 +85,6 @@ testing(inputs)
 # проверка после обучения на буквах с шумами
 print()
 print("Проверка на буквах с шумами:")
-
-# проверка после обучения на буквах с шумами
-print()
-print("Проверка на буквах с шумами:")
 x_loud = [[1, 1, 1, 0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 1, 0, 1, 0],
          [0, 1, 0, 0, 1, 1, 0, 1, 0], [1, 0, 0, 1, 0, 0, 1, 1, 0]]
 testing(x_loud)
-
-
-

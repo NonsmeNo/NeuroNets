@@ -22,8 +22,8 @@ class Network:
     def reLU(self, x):
         return max(0, x)
 
-inputs = [[0, 0], [1, 1], [1, 0], [0, 1]]
-expected_answ = [0, 0, 1, 1]
+inputs = [[0, 0], [0, 1], [1, 0], [1, 1]]
+expected_answ = [0, 1, 1, 0]
 
 neuron = Neuron()
 network = Network()
@@ -32,9 +32,9 @@ print("Результаты работы до обучения:")
 for i in range(len(inputs)):
     output = network.reLU(neuron.calculate(inputs[i]))
     if output <= 0.5:
-        print("Точка " + str(inputs[i]) + " относится к классу 0")
-    else:
         print("Точка " + str(inputs[i]) + " относится к классу 1")
+    else:
+        print("Точка " + str(inputs[i]) + " относится к классу 0")
 
 # обучение
 epochs = 1000
@@ -49,6 +49,6 @@ print("\nРезультаты работы после обучения:")
 for i in range(len(inputs)):
     output = network.reLU(neuron.calculate(inputs[i]))
     if output <= 0.5:
-        print("Точка " + str(inputs[i]) + " относится к классу 0")
-    else:
         print("Точка " + str(inputs[i]) + " относится к классу 1")
+    else:
+        print("Точка " + str(inputs[i]) + " относится к классу 0")
