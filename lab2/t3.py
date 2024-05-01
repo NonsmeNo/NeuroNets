@@ -20,7 +20,7 @@ class Neuron:
 class Network:
 
     def reLU(self, x):
-        return x
+        return max(0, x)
 
     def err(self, answer, output):
         summ = 0

@@ -56,7 +56,7 @@ print("Выходные значения " + str(outputs))
 
 # считаем среднюю относительную ошибку аппроксимации
 n = len(y)
-summ= 0
+summ = 0
 for i in range(n):
     summ += fabs(1 - (y[i][0] / outputs[i]))
 print("Средняя ошибка аппроксимации " + str(round((summ / n ), 5)))
@@ -65,6 +65,6 @@ print("Средняя ошибка аппроксимации " + str(round((sum
 plt.scatter(x, outputs)
 plt.plot(x, outputs)
 plt.grid(color='r', linestyle='--')
-plt.title("Исходные точки, получившиеся и график аппроксимации")
+plt.title("График аппроксимирующей функции")
 plt.show()
 
