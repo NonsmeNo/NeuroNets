@@ -7,17 +7,24 @@ class Network:
         self.weights = np.zeros((n, n))
 
     def calculate_weights(self, examples): # считаем веса по специальной формуле
+
         for i in examples:
             self.weights += np.outer(i, i.T)
+
         self.weights /= self.n
         np.fill_diagonal(self.weights, 0) # обнуляем значения весов по диагонали
         print(self.weights)
 
     def recalculate(self, state): # рассчитываем новое состояние нейронов, пока оно не перестанет изменяться
+
+        # рассчитывается новое состояние нейронов
+        # и значение активационной функции signum
         new_state = np.sign(np.dot(self.weights, state))
-        while not np.array_equal(new_state, state):
+
+        while not np.array_equal(new_state, state): #сравниваем состояния
             state = new_state
             new_state = np.sign(np.dot(self.weights, state))
+
         return new_state
 
 
@@ -53,33 +60,45 @@ letter = np.array([
 
 
 examples = [dog, letter]
-network.calculate_weights(examples) #считаем веса один раз
 
-def add_noise(array, noise_level=0.1):
-    num_pixels_to_noise = int(len(array) * noise_level)
-    noise_indices = np.random.choice(len(array), num_pixels_to_noise, replace=False)
-    array[noise_indices] *= -1
-    return array
+#считаем веса один раз
+#так как обучение сети проводится за одну эпоху
+network.calculate_weights(examples)
 
+def add_loud(example, loud_percent):
+    col_pixels = int(len(example) * loud_percent)
+    rand_pixels = np.random.choice(len(example), col_pixels)
+    loud_example = example.copy()
+    loud_example[rand_pixels] *= -1
+    return loud_example
 
+#графики
+fig, axes = plt.subplots(4, 4, figsize=(20, 20))
+for i, ax in enumerate(axes.flat):
+    ax.axis('on')
+    for frame in ax.spines.values():
+        frame.set_visible(True)
+    ax.tick_params(bottom=False, left=False, labelbottom=False, labelleft=False)
 
+fig.subplots_adjust(wspace=0.1, hspace=0.1)
+fig.suptitle('Примеры с шумом 10-40% и ответы', fontsize=16, color='blue', x=0.5, y=0.95)
+fig.canvas.manager.set_window_title('Собачки и буквы И')
 
-fig, axes = plt.subplots(8,2, figsize=(20,80))
-
-def tests(j):
+def testing(j, colors):
     noise = 0.1
-    for i in range(j*4, j*4+4):
-        test = add_noise(examples[j].copy(), noise)
-        pred = network.recalculate(test)
+    for i in range(0, 4):
+        print(j)
+        example = add_loud(examples[j].copy(), noise)
+        output = network.recalculate(example)
 
-        axes[i][0].imshow(test.reshape((10,10)), cmap='binary')
-        axes[i][1].imshow(pred.reshape((10,10)), cmap='binary')
-        axes[i][0].title.set_text(("'И'" if j else "Пёс") + f" с шумом {noise:.1f}")
-        axes[i][1].title.set_text("Предсказание")
-
+        axes[i][j*2].set_ylabel(str(int(noise*100)) + '%', rotation=90, fontsize=14, labelpad=20)
+        axes[i][j*2].imshow(example.reshape((10, 10)), cmap=colors)
+        axes[i][j*2+1].set_ylabel("Ответ", rotation=90, fontsize=14, labelpad=20)
+        axes[i][j*2+1].imshow(output.reshape((10, 10)), cmap=colors)
         noise += 0.1
 
-tests(0)
-tests(1)
+
+testing(0, "viridis")
+testing(1, "plasma")
 
 plt.show()
